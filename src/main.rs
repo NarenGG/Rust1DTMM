@@ -1,5 +1,6 @@
 use std::f64::consts::PI;
 use num::complex::Complex;
+use std::time::Instant;
 
 fn complex_modulo(z1: Complex<f64>, z2: Complex<f64>) -> Complex<f64> {
     let abs_z1 = z1.norm();
