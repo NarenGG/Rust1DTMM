@@ -110,26 +110,16 @@ fn solve_tmm(
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() % 2 != 1 {
-        eprintln!("Usage: {} <complex double> <integer> ...", args[0]);
-        std::process::exit(1);
-    }
-
     let start = Instant::now();
     let mut r = 0.0;
     let mut t = 0.0;
 
-    let num_layers = (args.len() - 1) / 2;
-    let mut layers = Vec::new();
-
-    for i in 0..num_layers {
-        let parts: Vec<&str> = args[2 * i + 1].split_whitespace().collect();
-        let real_part: f64 = parts[0].parse().unwrap_or(0.0);
-        let imag_part: f64 = parts[1].parse().unwrap_or(0.0);
-        let d: f64 = args[2 * i + 2].parse().unwrap_or(0.0);
-        layers.push([Complex::new(real_part, imag_part), Complex::new(d, 0.0)]);
-    }
+    // Define the layers manually
+    let layers = vec![
+        [Complex::new(1.5, 0.0), Complex::new(0.0, 0.0)], // Example layer 1
+        [Complex::new(2.0, 0.0), Complex::new(100.0, 0.0)], // Example layer 2
+        [Complex::new(1.0, 0.0), Complex::new(0.0, 0.0)], // Example layer 3 (substrate)
+    ];
 
     solve_tmm(&mut r, &mut t, &layers, 500.0, 0.0);
     println!("Reflectance: {}", r);
