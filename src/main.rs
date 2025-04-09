@@ -31,7 +31,7 @@ fn transfer_matrix(
 ) {
     let k_z = k_0 * n * theta.cos();
     let q_1 = cos_complex(k_z * d);
-    let q_2: Complex<f64> = Complex::i() * sin_complex(k_z * d); // Added explicit type annotation
+    let q_2: Complex<f64> = Complex::<f64>::i() * sin_complex(k_z * d); // Updated explicit type annotation
     let n_cos_th = n * theta.cos();
     result[0][0] = q_1;
     result[0][1] = q_2 / n_cos_th;
