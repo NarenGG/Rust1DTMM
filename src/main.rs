@@ -1,5 +1,5 @@
 use std::f64::consts::PI;
-use num_complex::Complex;
+use num::complex::Complex;
 use std::time::Instant;
 
 fn complex_modulo(z1: Complex<f64>, z2: Complex<f64>) -> Complex<f64> {
