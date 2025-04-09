@@ -7,7 +7,7 @@ fn complex_modulo(z1: Complex<f64>, z2: Complex<f64>) -> Complex<f64> {
     let abs_z2 = z2.norm();
     let remainder = abs_z1 % abs_z2;
     let angle_z1 = z1.arg();
-    Complex::from_polar(remainder, angle_z1) // Removed references
+    Complex::from_polar(remainder, angle_z1) // Fixed: Removed references
 }
 
 fn sin_complex(v: Complex<f64>) -> Complex<f64> {
@@ -122,9 +122,16 @@ fn main() {
     let mut layers = Vec::new();
 
     for i in 0..num_layers {
+        if args.len() <= 2 * i + 5 { // Fixed: Added bounds checking
+            eprintln!("Insufficient arguments provided for layer {}", i + 1);
+            std::process::exit(1);
+        }
+
         let real_part: f64 = args[2 * i + 3].parse().unwrap();
         let imag_part: f64 = args[2 * i + 4].parse().unwrap();
-        layers.push([Complex::new(real_part, imag_part), args[2 * i + 5].parse().unwrap()]);
+        let thickness: f64 = args[2 * i + 5].parse().unwrap();
+
+        layers.push([Complex::new(real_part, imag_part), Complex::new(thickness, 0.0)]);
     }
 
     let theta: f64 = args[2].parse().unwrap();
