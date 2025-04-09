@@ -109,38 +109,37 @@ fn solve_tmm(
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if args.len() % 2 != 1 {
-        eprintln!("Usage: {} <complex double> <integer> ...", args[0]);
+
+    // Debug: Print arguments
+    println!("Arguments: {:?}", args);
+
+    if args.len() < 5 {
+        eprintln!("Error: Insufficient arguments provided. Expected at least 5 arguments for 1 layer.");
+        eprintln!("Usage: {} <wavelength> <angle> <real_part_1> <imag_part_1> <thickness_1> ...", args[0]);
         std::process::exit(1);
     }
 
-    let start = Instant::now();
+    let wavelength: f64 = args[1].parse().expect("Invalid wavelength");
+    let theta: f64 = args[2].parse().expect("Invalid angle");
 
-    let mut r = 0.0;
-    let mut t = 0.0;
-    let num_layers = (args.len() - 3) / 2;
+    let num_layers = (args.len() - 3) / 3;
     let mut layers = Vec::new();
 
     for i in 0..num_layers {
-        if args.len() <= 2 * i + 5 { // Fixed: Added bounds checking
-            eprintln!("Insufficient arguments provided for layer {}", i + 1);
-            std::process::exit(1);
-        }
+        let real_part: f64 = args[3 + i * 3].parse().expect("Invalid real part");
+        let imag_part: f64 = args[4 + i * 3].parse().expect("Invalid imaginary part");
+        let thickness: f64 = args[5 + i * 3].parse().expect("Invalid thickness");
 
-        let real_part: f64 = args[2 * i + 3].parse().unwrap();
-        let imag_part: f64 = args[2 * i + 4].parse().unwrap();
-        let thickness: f64 = args[2 * i + 5].parse().unwrap();
-
-        layers.push([Complex::new(real_part, imag_part), Complex::new(thickness, 0.0)]);
+        layers.push([
+            Complex::new(real_part, imag_part),
+            Complex::new(thickness, 0.0),
+        ]);
     }
 
-    let theta: f64 = args[2].parse().unwrap();
-    let wl: f64 = args[1].parse().unwrap();
-    solve_tmm(&mut r, &mut t, &layers, num_layers, wl, theta);
+    let mut r = 0.0;
+    let mut t = 0.0;
+    solve_tmm(&mut r, &mut t, &layers, num_layers, wavelength, theta);
 
     println!("Reflectance: {}", r);
     println!("Transmittance: {}", t);
-
-    let duration = start.elapsed();
-    println!("Execution Time: {:.2?} ms", duration.as_micros());
 }
