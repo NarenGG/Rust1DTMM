@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2025"
 
 [dependencies]
-num_complex = "0.4.0"
+num = "0.4.0"
