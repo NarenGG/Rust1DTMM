@@ -3,43 +3,31 @@ use num::complex::Complex;
 use std::time::Instant;
 
 fn complex_modulo(z1: Complex<f64>, z2: Complex<f64>) -> Complex<f64> {
-    // Calculate the absolute values of the complex numbers
     let abs_z1 = z1.norm();
     let abs_z2 = z2.norm();
-    
-    // Calculate the modulus
     let remainder = abs_z1 % abs_z2;
-    
-    // Return the remainder as a complex number with the same argument as z1
     let angle_z1 = z1.arg();
-    Complex::from_polar(&remainder, &angle_z1)
+    Complex::from_polar(remainder, angle_z1) // Removed references
 }
 
 fn sin_complex(v: Complex<f64>) -> Complex<f64> {
-    // Take advantage of periodicity of trigonometric functions to evaluate at large values
     let a = v.re % (2.0 * PI);
-    let b = complex_modulo(v.im * Complex::i(), 2.0 * PI * Complex::i());
-
+    let b = complex_modulo(v.im * Complex::<f64>::i(), 2.0 * PI * Complex::<f64>::i()); // Specified Complex::<f64>
     Complex::new(a.sin() * b.im.cosh(), a.cos() * b.im.sinh())
 }
 
 fn cos_complex(v: Complex<f64>) -> Complex<f64> {
-    // Take advantage of periodicity of trigonometric functions to evaluate at large values
     let a = v.re % (2.0 * PI);
-    let b = complex_modulo(v.im * Complex::i(), 2.0 * PI * Complex::i());
-
+    let b = complex_modulo(v.im * Complex::<f64>::i(), 2.0 * PI * Complex::<f64>::i()); // Specified Complex::<f64>
     Complex::new(a.cos() * b.im.cosh(), -a.sin() * b.im.sinh())
 }
 
 fn transfer_matrix(result: &mut [[Complex<f64>; 2]; 2], k_0: f64, n: Complex<f64>, d: f64, theta: f64) {
-    let k_z = k_0 * n * theta.cos(); // Calculate longitudinal K
-
-    // Reduce redundant calculations in construction T_i
+    let k_z = k_0 * n * theta.cos();
     let q_1 = cos_complex(k_z * d);
-    let q_2 = Complex::i() * sin_complex(k_z * d);
+    let q_2: Complex<f64> = Complex::<f64>::i() * sin_complex(k_z * d); // Specified type and Complex::<f64>
     let n_cos_th = n * theta.cos();
 
-    // Transfer matrix calculation derived from Maxwell's equations
     result[0][0] = q_1;
     result[0][1] = q_2 / n_cos_th;
     result[1][0] = n_cos_th * q_2;
@@ -56,9 +44,8 @@ fn solve_tmm(
 ) {
     let k_0 = (2.0 * PI) / wavelength;
 
-    // Global transfer matrix initialization
     let mut m = [[Complex::new(1.0, 0.0), Complex::new(0.0, 0.0)],
-                [Complex::new(0.0, 0.0), Complex::new(1.0, 0.0)]];
+                 [Complex::new(0.0, 0.0), Complex::new(1.0, 0.0)]];
 
     let n_0 = layers[0][0];
     let n_l = layers[num_layers - 1][0];
@@ -71,7 +58,6 @@ fn solve_tmm(
         let mut t_i = [[Complex::default(); 2]; 2];
         transfer_matrix(&mut t_i, k_0, n, d, theta_i);
 
-        // Update global transfer matrix with dot product
         let mut temp = [[Complex::default(); 2]; 2];
         for j in 0..2 {
             for k in 0..2 {
