@@ -1,6 +1,5 @@
 use std::f64::consts::PI;
 use num::complex::Complex;
-use std::time::Instant;
 
 fn complex_modulo(z1: Complex<f64>, z2: Complex<f64>) -> Complex<f64> {
     let abs_z1 = z1.norm();
@@ -108,6 +107,8 @@ fn solve_tmm(
 }
 
 fn main() {
+    let start = Instant::now(); // Start timing
+
     let args: Vec<String> = std::env::args().collect();
 
     // Debug: Print arguments
@@ -142,4 +143,7 @@ fn main() {
 
     println!("Reflectance: {}", r);
     println!("Transmittance: {}", t);
+
+    let duration = start.elapsed(); // End timing
+    println!("Execution Time: {:.2} ms", duration.as_secs_f64() * 1000.0);
 }
