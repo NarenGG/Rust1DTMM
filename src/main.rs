@@ -7,7 +7,7 @@ fn complex_modulo(z1: Complex<f64>, z2: Complex<f64>) -> Complex<f64> {
     let abs_z2 = z2.norm();
     let remainder = abs_z1 % abs_z2;
     let angle_z1 = z1.arg();
-    Complex::from_polar(&remainder, &angle_z1)
+    Complex::from_polar(remainder, angle_z1) // Removed references
 }
 
 fn sin_complex(v: Complex<f64>) -> Complex<f64> {
@@ -31,7 +31,7 @@ fn transfer_matrix(
 ) {
     let k_z = k_0 * n * theta.cos();
     let q_1 = cos_complex(k_z * d);
-    let q_2 = Complex::i() * sin_complex(k_z * d);
+    let q_2: Complex<f64> = Complex::i() * sin_complex(k_z * d); // Added explicit type annotation
     let n_cos_th = n * theta.cos();
     result[0][0] = q_1;
     result[0][1] = q_2 / n_cos_th;
