@@ -2,13 +2,20 @@ use wasm_bindgen::prelude::*;
 use num::complex::Complex;
 use std::f64::consts::PI;
 
+// Define a struct to hold the result
+#[wasm_bindgen]
+pub struct TMMResult {
+    pub reflectance: f64,
+    pub transmittance: f64,
+}
+
 // Expose the solve_tmm function to JavaScript
 #[wasm_bindgen]
 pub fn solve_tmm_js(
     layers: Vec<f64>, // Flattened array for layers
     wavelength: f64,
     theta: f64,
-) -> (f64, f64) {
+) -> TMMResult {
     let num_layers = layers.len() / 3;
     let mut parsed_layers = Vec::new();
 
@@ -26,7 +33,12 @@ pub fn solve_tmm_js(
     let mut r = 0.0;
     let mut t = 0.0;
     solve_tmm(&mut r, &mut t, &parsed_layers, num_layers, wavelength, theta);
-    (r, t) // Return reflectance and transmittance
+
+    // Return the result as a TMMResult struct
+    TMMResult {
+        reflectance: r,
+        transmittance: t,
+    }
 }
 
 // Transfer Matrix Method function (Unchanged)

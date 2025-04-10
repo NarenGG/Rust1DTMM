@@ -1,11 +1,25 @@
 /* tslint:disable */
 /* eslint-disable */
+export function solve_tmm_js(layers: Float64Array, wavelength: number, theta: number): TMMResult;
+export class TMMResult {
+  private constructor();
+  free(): void;
+  reflectance: number;
+  transmittance: number;
+}
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_tmmresult_free: (a: number, b: number) => void;
+  readonly __wbg_get_tmmresult_reflectance: (a: number) => number;
+  readonly __wbg_set_tmmresult_reflectance: (a: number, b: number) => void;
+  readonly __wbg_get_tmmresult_transmittance: (a: number) => number;
+  readonly __wbg_set_tmmresult_transmittance: (a: number, b: number) => void;
+  readonly solve_tmm_js: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_0: WebAssembly.Table;
+  readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_start: () => void;
 }
 

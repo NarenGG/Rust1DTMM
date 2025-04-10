@@ -1,4 +1,4 @@
-import init, { initSync } from './pkg/Rust1DTMM.js';
+import init, { initSync, solve_tmm_js } from './pkg/Rust1DTMM.js';
 
 async function run() {
     await init(); // Initialize the Wasm module
@@ -8,5 +8,5 @@ async function run() {
 run();
 
 export { init }; // Add a named export for `init`
-export { solve_tmm } from './pkg/Rust1DTMM.js'; // Re-export `solve_tmm` from Rust1DTMM.js
+export { solve_tmm_js as solve_tmm }; // Re-export `solve_tmm_js` as `solve_tmm`
 export default init; // Keep the default export
