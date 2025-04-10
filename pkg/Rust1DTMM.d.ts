@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-export function solve_tmm_js(layers: Float64Array, wavelength: number, theta: number): TMMResult;
+export function solve_tmm_js(layers: Float64Array, wavelength: number, theta: number): Promise<TMMResult>;
 export class TMMResult {
   private constructor();
   free(): void;
@@ -17,9 +17,14 @@ export interface InitOutput {
   readonly __wbg_set_tmmresult_reflectance: (a: number, b: number) => void;
   readonly __wbg_get_tmmresult_transmittance: (a: number) => number;
   readonly __wbg_set_tmmresult_transmittance: (a: number, b: number) => void;
-  readonly solve_tmm_js: (a: number, b: number, c: number, d: number) => number;
-  readonly __wbindgen_export_0: WebAssembly.Table;
+  readonly solve_tmm_js: (a: number, b: number, c: number, d: number) => any;
+  readonly __wbindgen_exn_store: (a: number) => void;
+  readonly __externref_table_alloc: () => number;
+  readonly __wbindgen_export_2: WebAssembly.Table;
+  readonly __wbindgen_export_3: WebAssembly.Table;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
+  readonly closure15_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure32_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 
