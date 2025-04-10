@@ -6,3 +6,5 @@ async function run() {
 }
 
 run();
+
+export default init; // Add this line to provide a default export

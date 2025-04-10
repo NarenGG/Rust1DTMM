@@ -21,7 +21,7 @@
     <p id="result"></p>
     <script type="module">
         import { init, solve_tmm } from './index.js';
-
+    
         async function main() {
             await init();
             const form = document.getElementById('inputForm');
@@ -32,12 +32,12 @@
                 const real_part = parseFloat(document.getElementById('real_part').value);
                 const imag_part = parseFloat(document.getElementById('imag_part').value);
                 const thickness = parseFloat(document.getElementById('thickness').value);
-
+    
                 const result = solve_tmm(wavelength, angle, real_part, imag_part, thickness);
                 document.getElementById('result').textContent = `Result: ${result}`;
             });
         }
-
+    
         main();
     </script>
 </body>
