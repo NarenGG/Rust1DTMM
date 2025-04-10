@@ -1,4 +1,4 @@
-import init, { calculate } from './pkg/Rust1DTMM.js';
+import init, { solve_tmm_js } from './pkg/Rust1DTMM.js';
 
 async function run() {
     await init(); // Initialize the Wasm module
