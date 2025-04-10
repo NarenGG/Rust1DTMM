@@ -1,3 +1,6 @@
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [package]
 name = "Rust1DTMM"
 version = "0.1.0"
