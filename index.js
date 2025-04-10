@@ -7,4 +7,6 @@ async function run() {
 
 run();
 
-export default init; // Add this line to provide a default export
+export { init }; // Add a named export for `init`
+export { solve_tmm } from './pkg/Rust1DTMM.js'; // Re-export `solve_tmm` from Rust1DTMM.js
+export default init; // Keep the default export
