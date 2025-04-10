@@ -1,24 +1,28 @@
 use wasm_bindgen::prelude::*;
+use wasm_bindgen_rayon::init_thread_pool;
 use num::complex::Complex;
 use std::f64::consts::PI;
-use rayon::prelude::*;
+// ... your other imports ...
 
-#[wasm_bindgen]
-pub struct TMMResult {
-    pub reflectance: f64,
-    pub transmittance: f64,
+#[wasm_bindgen(start)]
+pub async fn run() -> Result<(), JsValue> {
+    // The number of threads to use. Typically, you'll want to match the number of cores.
+    // num_cpus::get() gives the number of logical cores, but you might limit this value.
+    init_thread_pool(num_cpus::get() as u32).await?;
+    Ok(())
 }
 
+// Your existing `solve_tmm_js` function that uses Rayon can then use into_par_iter().
 #[wasm_bindgen]
 pub async fn solve_tmm_js(
     layers: Vec<f64>,
     wavelength: f64,
     theta: f64,
 ) -> Result<TMMResult, JsValue> {
-    // Perform the computation in parallel using Rayon
+    // Now Rayon’s parallel iterators will work since the thread pool is initialized.
     let num_layers = layers.len() / 3;
     let parsed_layers: Vec<[Complex<f64>; 2]> = (0..num_layers)
-        .into_par_iter()
+        .into_par_iter() // This is now allowed with Rayon in WASM.
         .map(|i| {
             let real_part = layers[i * 3];
             let imag_part = layers[i * 3 + 1];
@@ -40,7 +44,6 @@ pub async fn solve_tmm_js(
         transmittance: t,
     })
 }
-
 // Transfer Matrix Method function (unchanged)
 fn solve_tmm(
     r: &mut f64,
