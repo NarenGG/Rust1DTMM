@@ -1,6 +1,8 @@
 use wasm_bindgen::prelude::*;
+use wasm_bindgen_futures::spawn_local;
 use num::complex::Complex;
 use std::f64::consts::PI;
+use rayon::prelude::*;
 
 // Define a struct to hold the result
 #[wasm_bindgen]
@@ -11,37 +13,44 @@ pub struct TMMResult {
 
 // Expose the solve_tmm function to JavaScript
 #[wasm_bindgen]
-pub fn solve_tmm_js(
+pub async fn solve_tmm_js(
     layers: Vec<f64>, // Flattened array for layers
     wavelength: f64,
     theta: f64,
-) -> TMMResult {
-    let num_layers = layers.len() / 3;
-    let mut parsed_layers = Vec::new();
+) -> Result<TMMResult, JsValue> {
+    // Spawn the computation on a separate thread using Rayon
+    let result = rayon::spawn_fifo(move || {
+        let num_layers = layers.len() / 3;
+        let mut parsed_layers: Vec<[Complex<f64>; 2]> = Vec::new();
 
-    for i in 0..num_layers {
-        let real_part = layers[i * 3];
-        let imag_part = layers[i * 3 + 1];
-        let thickness = layers[i * 3 + 2];
+        for i in 0..num_layers {
+            let real_part = layers[i * 3];
+            let imag_part = layers[i * 3 + 1];
+            let thickness = layers[i * 3 + 2];
 
-        parsed_layers.push([
-            Complex::new(real_part, imag_part),
-            Complex::new(thickness, 0.0),
-        ]);
-    }
+            parsed_layers.push([
+                Complex::new(real_part, imag_part),
+                Complex::new(thickness, 0.0),
+            ]);
+        }
 
-    let mut r = 0.0;
-    let mut t = 0.0;
-    solve_tmm(&mut r, &mut t, &parsed_layers, num_layers, wavelength, theta);
+        let mut r = 0.0;
+        let mut t = 0.0;
+        solve_tmm(&mut r, &mut t, &parsed_layers, num_layers, wavelength, theta);
 
-    // Return the result as a TMMResult struct
-    TMMResult {
-        reflectance: r,
-        transmittance: t,
-    }
+        TMMResult {
+            reflectance: r,
+            transmittance: t,
+        }
+    });
+
+    // Await the result of the computation
+    let tmm_result = result.join().map_err(|_| JsValue::from_str("Computation failed"))?;
+
+    Ok(tmm_result)
 }
 
-// Transfer Matrix Method function (Unchanged)
+// Transfer Matrix Method function (unchanged)
 fn solve_tmm(
     r: &mut f64,
     t: &mut f64,
@@ -115,7 +124,7 @@ fn solve_tmm(
     *t = t_complex.norm_sqr() * (n_l * theta_l.cos()).re / (n_0 * theta.cos()).re;
 }
 
-// Transfer Matrix helper function (Unchanged)
+// Transfer Matrix helper function (unchanged)
 fn transfer_matrix(
     result: &mut [[Complex<f64>; 2]; 2],
     k_0: f64,
@@ -134,7 +143,7 @@ fn transfer_matrix(
     result[1][1] = q_1;
 }
 
-// Complex sine and cosine functions (Unchanged)
+// Complex sine and cosine functions (unchanged)
 fn sin_complex(v: Complex<f64>) -> Complex<f64> {
     let a = v.re % (2.0 * PI);
     let b = v.im % (2.0 * PI);
