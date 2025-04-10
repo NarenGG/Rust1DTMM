@@ -1,8 +1,8 @@
-import init, { greet } from './pkg/your_project_name.js';
+import init, { calculate } from './pkg/Rust1DTMM.js';
 
 async function run() {
-    await init(); // Initialize the WebAssembly module
-    console.log(greet("World")); // Call the exposed Rust function
+    await init(); // Initialize the Wasm module
+    console.log(calculate(5)); // Call the Rust function from JavaScript
 }
 
 run();
