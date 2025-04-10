@@ -1,53 +1,44 @@
 use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::spawn_local;
 use num::complex::Complex;
 use std::f64::consts::PI;
 use rayon::prelude::*;
 
-// Define a struct to hold the result
 #[wasm_bindgen]
 pub struct TMMResult {
     pub reflectance: f64,
     pub transmittance: f64,
 }
 
-// Expose the solve_tmm function to JavaScript
 #[wasm_bindgen]
 pub async fn solve_tmm_js(
-    layers: Vec<f64>, // Flattened array for layers
+    layers: Vec<f64>,
     wavelength: f64,
     theta: f64,
 ) -> Result<TMMResult, JsValue> {
-    // Spawn the computation on a separate thread using Rayon
-    let result = rayon::spawn_fifo(move || {
-        let num_layers = layers.len() / 3;
-        let mut parsed_layers: Vec<[Complex<f64>; 2]> = Vec::new();
-
-        for i in 0..num_layers {
+    // Perform the computation in parallel using Rayon
+    let num_layers = layers.len() / 3;
+    let parsed_layers: Vec<[Complex<f64>; 2]> = (0..num_layers)
+        .into_par_iter()
+        .map(|i| {
             let real_part = layers[i * 3];
             let imag_part = layers[i * 3 + 1];
             let thickness = layers[i * 3 + 2];
-
-            parsed_layers.push([
+            [
                 Complex::new(real_part, imag_part),
                 Complex::new(thickness, 0.0),
-            ]);
-        }
+            ]
+        })
+        .collect();
 
-        let mut r = 0.0;
-        let mut t = 0.0;
-        solve_tmm(&mut r, &mut t, &parsed_layers, num_layers, wavelength, theta);
+    let mut r = 0.0;
+    let mut t = 0.0;
 
-        TMMResult {
-            reflectance: r,
-            transmittance: t,
-        }
-    });
+    solve_tmm(&mut r, &mut t, &parsed_layers, num_layers, wavelength, theta);
 
-    // Await the result of the computation
-    let tmm_result = result.join().map_err(|_| JsValue::from_str("Computation failed"))?;
-
-    Ok(tmm_result)
+    Ok(TMMResult {
+        reflectance: r,
+        transmittance: t,
+    })
 }
 
 // Transfer Matrix Method function (unchanged)
