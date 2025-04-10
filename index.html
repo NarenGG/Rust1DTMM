@@ -10,37 +10,71 @@
         <input type="text" id="wavelength" name="wavelength"><br>
         <label for="angle">Angle:</label>
         <input type="text" id="angle" name="angle"><br>
-        <label for="real_part">Refractive Index (Real):</label>
-        <input type="text" id="real_part" name="real_part"><br>
-        <label for="imag_part">Refractive Index (Imaginary):</label>
-        <input type="text" id="imag_part" name="imag_part"><br>
-        <label for="thickness">Thickness:</label>
-        <input type="text" id="thickness" name="thickness"><br>
+        <div id="layersContainer">
+            <h3>Layers</h3>
+            <div class="layer">
+                <label>Refractive Index (Real):</label>
+                <input type="text" class="real_part" name="real_part"><br>
+                <label>Refractive Index (Imaginary):</label>
+                <input type="text" class="imag_part" name="imag_part"><br>
+                <label>Thickness:</label>
+                <input type="text" class="thickness" name="thickness"><br>
+            </div>
+        </div>
+        <button type="button" id="addLayerButton">Add Layer</button><br>
         <button type="submit">Calculate</button>
     </form>
     <p id="result"></p>
     <script type="module">
         import { init, solve_tmm } from './index.js';
 
-async function main() {
-    await init();
-    const form = document.getElementById('inputForm');
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const wavelength = parseFloat(document.getElementById('wavelength').value);
-        const angle = parseFloat(document.getElementById('angle').value);
-        const real_part = parseFloat(document.getElementById('real_part').value);
-        const imag_part = parseFloat(document.getElementById('imag_part').value);
-        const thickness = parseFloat(document.getElementById('thickness').value);
+        async function main() {
+            await init();
 
-        const layers = [real_part, imag_part, thickness];
-        const result = solve_tmm(layers, wavelength, angle);
+            const form = document.getElementById('inputForm');
+            const addLayerButton = document.getElementById('addLayerButton');
+            const layersContainer = document.getElementById('layersContainer');
 
-        document.getElementById('result').textContent = `Reflectance: ${result.reflectance}, Transmittance: ${result.transmittance}`;
-    });
-}
+            // Add a new layer input group when the "Add Layer" button is clicked
+            addLayerButton.addEventListener('click', () => {
+                const layerDiv = document.createElement('div');
+                layerDiv.classList.add('layer');
+                layerDiv.innerHTML = `
+                    <label>Refractive Index (Real):</label>
+                    <input type="text" class="real_part" name="real_part"><br>
+                    <label>Refractive Index (Imaginary):</label>
+                    <input type="text" class="imag_part" name="imag_part"><br>
+                    <label>Thickness:</label>
+                    <input type="text" class="thickness" name="thickness"><br>
+                `;
+                layersContainer.appendChild(layerDiv);
+            });
 
-main();
+            // Handle form submission
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const wavelength = parseFloat(document.getElementById('wavelength').value);
+                const angle = parseFloat(document.getElementById('angle').value);
+
+                // Collect all layer inputs
+                const layers = [];
+                document.querySelectorAll('.layer').forEach(layer => {
+                    const realPart = parseFloat(layer.querySelector('.real_part').value);
+                    const imagPart = parseFloat(layer.querySelector('.imag_part').value);
+                    const thickness = parseFloat(layer.querySelector('.thickness').value);
+                    layers.push(realPart, imagPart, thickness);
+                });
+
+                // Call the Rust function
+                const result = solve_tmm(new Float64Array(layers), wavelength, angle);
+
+                // Display the result
+                document.getElementById('result').textContent = `Reflectance: ${result.reflectance}, Transmittance: ${result.transmittance}`;
+            });
+        }
+
+        main();
     </script>
 </body>
 </html>
