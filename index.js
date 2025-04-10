@@ -8,5 +8,5 @@ async function run() {
 run();
 
 export { init }; // Add a named export for `init`
-export { solve_tmm_js as solve_tmm }; // Re-export `solve_tmm_js` as `solve_tmm`
+export { solve_tmm_js as solve_tmm }; // Correctly re-export `solve_tmm_js` as `solve_tmm`
 export default init; // Keep the default export
