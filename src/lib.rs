@@ -46,7 +46,7 @@ pub async fn solve_tmm_js(
     })
 }
 // Transfer Matrix Method function (unchanged)
-fn solve_tmm(
+async fn solve_tmm(
     r: &mut f64,
     t: &mut f64,
     layers: &Vec<[Complex<f64>; 2]>,
@@ -120,7 +120,7 @@ fn solve_tmm(
 }
 
 // Transfer Matrix helper function (unchanged)
-fn transfer_matrix(
+async fn transfer_matrix(
     result: &mut [[Complex<f64>; 2]; 2],
     k_0: f64,
     n: Complex<f64>,
@@ -139,13 +139,13 @@ fn transfer_matrix(
 }
 
 // Complex sine and cosine functions (unchanged)
-fn sin_complex(v: Complex<f64>) -> Complex<f64> {
+async fn sin_complex(v: Complex<f64>) -> Complex<f64> {
     let a = v.re % (2.0 * PI);
     let b = v.im % (2.0 * PI);
     Complex::new(a.sin() * b.cosh(), a.cos() * b.sinh())
 }
 
-fn cos_complex(v: Complex<f64>) -> Complex<f64> {
+async fn cos_complex(v: Complex<f64>) -> Complex<f64> {
     let a = v.re % (2.0 * PI);
     let b = v.im % (2.0 * PI);
     Complex::new(a.cos() * b.cosh(), -a.sin() * b.sinh())
