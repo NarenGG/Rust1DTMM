@@ -4,6 +4,7 @@ use num::complex::Complex;
 use std::f64::consts::PI;
 // ... your other imports ...
 
+#[tokio::main]
 #[wasm_bindgen(start)]
 pub async fn run() -> Result<(), JsValue> {
     // The number of threads to use. Typically, you'll want to match the number of cores.
